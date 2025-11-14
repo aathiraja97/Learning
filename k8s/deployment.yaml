@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gke-test-app
+  labels:
+    app: gke-test-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gke-test-app
+  template:
+    metadata:
+      labels:
+        app: gke-test-app
+    spec:
+      containers:
+      - name: gke-test-app
+        image: REPLACE_IMAGE   # replaced by pipeline with the built image path
+        ports:
+        - containerPort: 8080
+        env:
+        - name: VERSION
+          value: "v1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gke-test-app-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: gke-test-app
+  ports:
+  - port: 80
+    targetPort: 8080
